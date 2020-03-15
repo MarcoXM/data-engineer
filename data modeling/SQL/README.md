@@ -12,17 +12,17 @@ In this project, I have to model data with Postgres and build and ETL pipeline u
 
 <b>Fact Table</b>
 
-<b> songplays </b> records in log data associated with song plays
+<b> 	songplays </b> records in log data associated with song plays
 
 <b>Dimension Tables</b>
 
-<b> users </b> in the app
+<b> 	users </b> in the app
 
-<b> songs </b> in music database
+<b> 	songs </b> in music database
 
-<b> artists </b> in music database
+<b> 	artists </b> in music database
 
-<b> time: </b> timestamps of records in songplays broken down into specific units
+<b> 	time: </b> timestamps of records in songplays broken down into specific units
 
 <b>Project Design</b>
 
@@ -30,22 +30,36 @@ Database Design is very optimized because with a ew number of tables and doing s
 
 ETL Design is also simplified have to read json files and parse accordingly to store the tables into specific columns and proper formatting
 
-<b>Database Script</b>
+**How to use**
 
-Writing "python create_tables.py" command in terminal, it is easier to create and recreate tables
+prerequisites: 
 
-<b>Jupyter Notebook</b>
+Python3 is recommended as the environment. The most convenient way to install python is to use Anaconda (https://www.anaconda.com/distribution/) either via GUI or command line. Also, the following libraries are needed for the python environment to make Jupyter Notebook and Postgresql to work:
 
-etl.ipynb, a Jupyter notebook is given for verifying each command and data as well and then using those statements and copying into etl.py and running it into terminal using "python etl.py" and then running test.ipynb to see whether data has been loaded in all the tables
+- *postgresql* (+ dependencies) to enable sripts and Jupyter to connect to Postgresql DB.
+- *jupyter* (+ dependencies) to enable Jupyter Notebook.
+- *ipython-sql* (https://anaconda.org/conda-forge/ipython-sql) to make Jupyter Notebook and SQL queries to Postgresql work together. NOTE: you may need to install this library from command line.
 
-<b>Relevant Files Provided </b>
+ 
 
-<b>test.ipnb </b>displays the first few rows of each table to let you check your database
+**Run the code** (py)
 
-<b>create_tables.py </b>drops and created your table
+Type to command line:
 
-<b>etl.ipynb </b>read and processes a single file from song_data and log_data and loads into your tables in Jupyter notebook
+```
+python create_tables.py
+```
 
-<b>etl.ipynb </b>read and processes a single file from song_data and log_data and loads into your tables in ET
+Output: Script writes *"Tables dropped successfully"* and *"Tables created successfully"* if all tables were dropped and created without errors.
 
-<b>sql_queries.py </b>containg all your sql queries and in imported into the last three files above
+
+
+Type to command line:
+
+```
+python etl.py
+```
+
+
+
+More information could check in the ipynb file!
