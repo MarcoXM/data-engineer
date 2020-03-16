@@ -1,44 +1,47 @@
-<b>Introduction</b>
+## Introduction
 
 A music streaming startup, Sparkify, has grown their user base and song database and want to move their processes and data onto the cloud. Their data resides in S3, in a directory of JSON logs on user activity on the app, as well as a directory with JSON metadata on the songs in their app.
 
 Task is to build an ETL Pipeline that extracts their data from S3, staging it in Redshift and then transforming data into a set of Dimensional and Fact Tables for their Analytics Team to continue finding Insights to what songs their users are listening to.
 
-<b>Project Description</b>
+### Project Description
 
 Application of Data warehouse and AWS to build an ETL Pipeline for a database hosted on Redshift Will need to load data from S3 to staging tables on Redshift and execute SQL Statements that create fact and dimension tables from these staging tables to create analytics
 
-<b>Project Datasets</b>
+### Project Datasets</b>
 
 Song Data Path     -->     s3://udacity-dend/song_data
 Log Data Path      -->     s3://udacity-dend/log_data
 Log Data JSON Path -->     s3://udacity-dend/log_json_path.json
 
-<b>Song Dataset</b>
+## Quick Start
 
-The first dataset is a subset of real data from the Million Song Dataset(https://labrosa.ee.columbia.edu/millionsong/). Each file is in JSON format and contains metadata about a song and the artist of that song. The files are partitioned by the first three letters of each song's track ID. 
-For example:
+First, rename dwh_template.cfg to dwh.cfg and fill in the open fields. Fill in AWS acces key (KEY) and secret (SECRET).
 
-song_data/A/B/C/TRABCEI128F424C983.json
-song_data/A/A/B/TRAABJL12903CDCF1A.json
+To access AWS, you need to do in AWS the following:
 
-And below is an example of what a single song file, TRAABJL12903CDCF1A.json, looks like.
+* create IAM user (e.g. dwhuser)
+* create IAM role (e.g. dwhRole) with AmazonS3ReadOnlyAccess access rights
+* get ARN
+* create and run Redshift cluster (e.g. dwhCluster => HOST)
 
-{"num_songs": 1, "artist_id": "ARJIE2Y1187B994AB7", "artist_latitude": null, "artist_longitude": null, "artist_location": "", "artist_name": "Line Renaud", "song_id": "SOUPIRU12A6D4FA1E1", "title": "Der Kleine Dompfaff", "duration": 152.92036, "year": 0}
+For creating IAM role, getting ARN and running cluster, you can use `Udacity-DEND-Project-3-AWS-Setup.ipynb`.
 
-<b>Log Dataset</b>
+Example data is in data folder. To run the script to use that data, do the wfollowing:
 
-The second dataset consists of log files in JSON format. The log files in the dataset with are partitioned by year and month.
-For example:
+* Create an AWS S3 bucket.
+* Edit cwh.cfg: add your S3 bucket name in LOG_PATH and SONG_PATH variables.
+* Copy log_data and song_data folders to your own S3 bucket.
 
-log_data/2018/11/2018-11-12-events.json
-log_data/2018/11/2018-11-13-events.json
+After installing python3 + AWS SDK (boto3) libraries and dependencies, run from command line:
 
-And below is an example of what a single log file, 2018-11-13-events.json, looks like.
+* `python3 create_tables.py` (to create the DB to AWS Redshift)
+* `python3 etl.py` (to process all the input data to the DB)
 
-{"artist":"Pavement", "auth":"Logged In", "firstName":"Sylvie", "gender", "F", "itemInSession":0, "lastName":"Cruz", "length":99.16036, "level":"free", "location":"Klamath Falls, OR", "method":"PUT", "page":"NextSong", "registration":"1.541078e+12", "sessionId":345, "song":"Mercy:The Laundromat", "status":200, "ts":1541990258796, "userAgent":"Mozilla/5.0(Macintosh; Intel Mac OS X 10_9_4...)", "userId":10}
+---
 
-<b>Schema for Song Play Analysis</b>
+
+### Schema for Song Play Analysis
 
 A Star Schema would be required for optimized queries on song play queries
 
@@ -61,35 +64,53 @@ artist_id, name, location, lattitude, longitude
 <b>time</b> - timestamps of records in songplays broken down into specific units
 start_time, hour, day, week, month, year, weekday
 
-<b>Project Template</b>
+## How to use
 
-Project Template include four files:
+**Project has two scripts:**
 
-<b>1. create_table.py</b> is where you'll create your fact and dimension tables for the star schema in Redshift.
+* **create_tables.py**: This script drops existing tables and creates new ones.
+* **etl.py**: This script uses data in s3:/udacity-dend/song_data and s3:/udacity-dend/log_data, processes it, and inserts the processed data into DB.
 
-<b>2. etl.py</b> is where you'll load data from S3 into staging tables on Redshift and then process that data into your analytics tables on Redshift.
+### Prerequisites
 
-<b>3. sql_queries.py</b> is where you'll define you SQL statements, which will be imported into the two other files above.
+Python3 is recommended as the environment. The most convenient way to install python is to use Anaconda (https://www.anaconda.com/distribution/) either via GUI or command line.
+Also, the following libraries are needed for the python environment to make Jupyter Notebook and AWS Redshift to work:
 
-<b>4. README.md</b> is where you'll provide discussion on your process and decisions for this ETL pipeline.
+* _AWS SDK (boto3)_ (+ dependencies) to enable scripts and Jupyter to connect to AWS Redshift DB. (See https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+* _jupyter_ (+ dependencies) to enable Jupyter Notebook.
+* _ipython-sql_ (https://anaconda.org/conda-forge/ipython-sql) to make Jupyter Notebook and SQL queries to AWS Redshift work together. NOTE: you may need to install this library from command line.
 
-<b>Create Table Schema</b>
+### Run create_tables.py
 
-1. Write a SQL CREATE statement for each of these tables in sql_queries.py
-2. Complete the logic in create_tables.py to connect to the database and create these tables
-3. Write SQL DROP statements to drop tables in the beginning of create_tables.py if the tables already exist. This way, you can run create_tables.py whenever you want to reset your database and test your ETL pipeline.
-4. Launch a redshift cluster and create an IAM role that has read access to S3.
-5. Add redshift database and IAM role info to dwh.cfg.
-6. Test by running create_tables.py and checking the table schemas in your redshift database.
+Type to command line:
 
-<b>Build ETL Pipeline</b>
+`python3 create_tables.py`
 
-1. Implement the logic in etl.py to load data from S3 to staging tables on Redshift.
-2. Implement the logic in etl.py to load data from staging tables to analytics tables on Redshift.
-3. Test by running etl.py after running create_tables.py and running the analytic queries on your Redshift database to compare your results with the expected results.
-4. Delete your redshift cluster when finished.
+* All tables are dropped.
+* New tables are created: 2x staging tables + 4x dimensional tables + 1x fact table.
+* Output: Script writes _"Tables dropped successfully"_ and _"Tables created successfully"_ if all tables were dropped and created without errors.
 
-<b>Final Instructions</b>
+### Run etl.py
+
+Type to command line:
+
+`python3 etl.py`
+
+* Script executes AWS Redshift COPY commands to insert source data (JSON files) to DB staging tables.
+* From staging tables, data is further inserted to analytics tables.
+* Script writes to console the query it's executing at any given time and if the query was successfully executed.
+* In the end, script tells if whole ETL-pipeline was successfully executed.
+
+Output: raw data is in staging_tables + selected data in analytics tables.
+
+## Data cleaning process
+
+`etl.py`works the following way to process the data from source files to analytics tables:
+
+* Loading part of the script (COPY from JSON to staging tables) query takes the data as it is.
+* When inserting data from staging tables to analytics tables, queries remove any duplicates (INSERT ... SELECT DISTINCT ...).
+
+<b>Wrap UP</b>
 
 1. Import all the necessary libraries
 2. Write the configuration of AWS Cluster, store the important parameter in some other file
