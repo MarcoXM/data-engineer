@@ -1,16 +1,30 @@
-<b>Project: Data Lake</b>
 
-<b>Final Instructions</b>
 
-1. Write correct keys in dl.cfg
-2. Open Terminal write the command "python etl.py"
-3. Should take about 12-14 mins in total
+## Quick start
 
-<b>Introduction</b>
+First, rename dl_template.cfg to dl.cfg and fill in the open fields. Fill in AWS acces key (KEY) and secret (SECRET).
 
-A music streaming startup, **Sparkify**,
+Example data is in data folder. To run the script to use that data, do the wfollowing:
 
-**Their data resides in S3, in a directory of JSON logs on user activity on the app, as well as a directory with JSON metadata on the songs in their app**
+* Create an AWS S3 bucket.
+* Edit dl.cfg: add your S3 bucket name.
+* Copy **log_data** and **song_data** folders to your own S3 bucket.
+* Create **output_data** folder in your S3 bucket.
+* NOTE: You can also run script locally and use local input files. Just comment/uncomment rows in `etl.py` main() function.
+
+After installing python3 + Apache Spark (pyspark) libraries and dependencies, run from command line:
+
+* `python3 etl.py` (to process all the input JSON data into Spark parquet files.)
+
+---
+
+## Overview
+
+This Project-4 handles data of a music streaming startup, Sparkify. Data set is a set of files in JSON format stored in AWS S3 buckets and contains two parts:
+
+Project builds an ETL pipeline (Extract, Transform, Load) to Extract data from JSON files stored in AWS S3, process the data with Apache Spark, and write the data back to AWS S3 as Spark parquet files. As technologies, Project-4 uses python, AWS S3 and Apache Spark.
+
+As a local run on laptop, pipeline takes around 1min 40sec to execute with the given test data set.
 
 
 
@@ -68,20 +82,40 @@ A Star Schema would be required for optimized queries on song play queries
 
 <b>time</b> - timestamps of records in songplays broken down into specific units start_time, hour, day, week, month, year, weekday
 
-<b>Project Template</b>
 
-Project Template include three files:
 
-<b>1. etl.py</b> reads data from S3, processes that data using Spark and writes them back to S3
+## How to use
 
-<b>2. dl.cfg</b> contains AWS Credentials
+**Project has one script:**
 
-<b>3. README.md</b> provides discussion on your process and decisions
+* **etl.py**: This script uses data in s3:/udacity-dend/song_data and s3:/udacity-dend/log_data, processes it, and inserts the processed data into DB.
 
-<b>ETL Pipeline</b>
+### Prerequisites
 
-1. Load the credentials from dl.cfg
-2. Load the Data which are in JSON Files(Song Data and Log Data)
-3. After loading the JSON Files from S3
-   4.Use Spark process this JSON files and then generate a set of Fact and Dimension Tables
-4. Load back these dimensional process to S3
+Python3 is recommended as the environment. The most convenient way to install python is to use Anaconda (https://www.anaconda.com/distribution/) either via GUI or command line.
+Also, the following libraries are needed for the python environment to make Jupyter Notebook and Apache Spark to work:
+
+* _pyspark_ (+ dependencies) to enable script to create a SparkSession. (See https://spark.apache.org/docs/latest/api/python/pyspark.sql.html)
+* NOTE: in the beginning of the execution, script downloads hadoop-aws package to enable connection to AWS.
+
+### Run etl.py
+
+Type to command line:
+
+`python3 etl.py`
+
+* Script executes Apache Spark SQL commands to read source data (JSON files) from S3 to memory as Spark DataFrames.
+* In memory, data is further manipulated to analytics DataFrames.
+* Analytics dataFrames are stored back to S4 as Spark parquet files.
+* Script writes to console the query it's executing at any given time and if the query was successfully executed.
+* Also, script writes to console DataFrame schemas and show a handful of example data.
+* In the end, script tells if whole ETL-pipeline was successfully executed.
+
+Output: input JSON data is processed and analysed data is written back to S3 as Spark parquet files.
+
+## Data cleaning process
+
+`etl.py` works the following way to process the data from source files to analytics tables:
+
+* Loading part of the script (COPY from JSON to staging tables) query takes the data as it is.
+* When inserting data from staging tables to analytics tables, queries remove any duplicates (INSERT ... SELECT DISTINCT ...).
